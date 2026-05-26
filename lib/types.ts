@@ -11,6 +11,7 @@ export type Candidate = {
   domain?: string;
   merchant?: string;
   isProductPage?: boolean;
+  fitReason?: string;
 };
 
 export type SearchRequest = {
@@ -26,6 +27,7 @@ export type SearchResponse = {
   error?: string;
   blockReason?: string;
   assistantMessage?: string;
+  shortlistSummary?: string;
   refinementChips: string[];
   candidates: Candidate[];
 };

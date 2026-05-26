@@ -13,6 +13,7 @@ export default function HomePage() {
   const [chips, setChips] = useState<string[]>([]);
   const [chat, setChat] = useState<Chat[]>([]);
   const [errorMessage, setErrorMessage] = useState('');
+  const [shortlistSummary, setShortlistSummary] = useState('');
   const hasResults = candidates.length > 0;
 
   const canSearch = useMemo(() => query.trim().length > 0 && !loading, [query, loading]);
@@ -40,6 +41,7 @@ export default function HomePage() {
     }
 
     setCandidates(data.candidates ?? []);
+    setShortlistSummary(data.shortlistSummary ?? '');
     setChips(data.refinementChips ?? []);
     if (data.assistantMessage) {
       setChat((prev) => [...prev, { role: 'assistant', text: data.assistantMessage }]);
@@ -71,12 +73,15 @@ export default function HomePage() {
 
       {errorMessage && <p className="mb-4 rounded-xl border border-rose-200 bg-rose-50 p-3 text-sm text-rose-700">{errorMessage}</p>}
 
+      {shortlistSummary && <p className="mb-3 rounded-xl bg-slate-100 p-3 text-sm text-slate-700">{shortlistSummary}</p>}
+
       <section className="grid gap-3">
         {candidates.map((item) => (
           <article key={item.id} className="rounded-xl border bg-white p-4">
             {item.imageUrl && <img src={item.imageUrl} alt={item.title} className="mb-3 h-40 w-full rounded-lg object-cover" />}
             <h2 className="font-semibold">{item.title}</h2>
-            <p className="mt-1 text-sm text-slate-600">{item.snippet}</p>
+            {item.fitReason && <p className="mt-1 text-sm text-emerald-700">{item.fitReason}</p>}
+            <p className="mt-1 text-xs text-slate-600">{item.snippet}</p>
             <p className="mt-2 text-sm font-medium text-slate-800">{item.price ?? '價格待確認'}</p>
             <p className="mt-1 text-xs text-slate-500">{item.merchant ?? item.source}{item.domain ? ` · ${item.domain}` : ''}</p>
             {item.link && (
