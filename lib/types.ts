@@ -19,6 +19,7 @@ export type SearchRequest = {
 
 export type SearchResponse = {
   blocked: boolean;
+  error?: string;
   blockReason?: string;
   assistantMessage?: string;
   refinementChips: string[];

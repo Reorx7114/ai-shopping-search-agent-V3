@@ -12,6 +12,7 @@ export default function HomePage() {
   const [candidates, setCandidates] = useState<Candidate[]>([]);
   const [chips, setChips] = useState<string[]>([]);
   const [chat, setChat] = useState<Chat[]>([]);
+  const [errorMessage, setErrorMessage] = useState('');
   const hasResults = candidates.length > 0;
 
   const canSearch = useMemo(() => query.trim().length > 0 && !loading, [query, loading]);
@@ -25,6 +26,13 @@ export default function HomePage() {
     });
     const data = await res.json();
     setLoading(false);
+
+    if (!res.ok || data.error) {
+      setErrorMessage(data.error ?? '搜尋服務暫時不可用，請稍後再試。');
+      return;
+    }
+
+    setErrorMessage('');
 
     if (data.blocked) {
       setChat((prev) => [...prev, { role: 'assistant', text: '這個方向我不能協助喔，我們可以換成安全的選購需求。' }]);
@@ -41,6 +49,7 @@ export default function HomePage() {
   async function onSearch(e: FormEvent) {
     e.preventDefault();
     setChat([]);
+    setErrorMessage('');
     await performSearch();
   }
 
@@ -59,6 +68,8 @@ export default function HomePage() {
         <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="想找什麼？可以直接描述感覺與偏好" className="flex-1 rounded-xl border p-3" />
         <button disabled={!canSearch} className="rounded-xl bg-slate-900 px-4 py-3 text-white disabled:opacity-40">{loading ? '整理中...' : '開始'}</button>
       </form>
+
+      {errorMessage && <p className="mb-4 rounded-xl border border-rose-200 bg-rose-50 p-3 text-sm text-rose-700">{errorMessage}</p>}
 
       <section className="grid gap-3">
         {candidates.map((item) => (
