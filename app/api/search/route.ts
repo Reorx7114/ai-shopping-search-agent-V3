@@ -3,20 +3,7 @@ import { buildRefinementChips, refineCandidates, shortConciergeReply } from '@/l
 import { postParseSafetyCheck, preParseSafetyCheck, preSerpSafetyCheck } from '@/lib/safety';
 import { fetchSerpCandidates } from '@/lib/serp';
 import { SearchRequest, SearchResponse } from '@/lib/types';
-
-function buildQueries(query: string, refinement?: string) {
-  const base = [query];
-  if (refinement) {
-    base.push(`${query} ${refinement}`);
-  }
-
-  if (query.includes('怪物獵人') || query.includes('魔物獵人') || query.toLowerCase().includes('monster hunter')) {
-    base.push(`${query} 艾路貓 玩偶`);
-    base.push(`${query} palico plush`);
-  }
-
-  return Array.from(new Set(base)).slice(0, 4);
-}
+import { buildSemanticQueries } from '@/lib/query-intent';
 
 export async function POST(req: Request) {
   const body = (await req.json()) as SearchRequest;
@@ -42,7 +29,8 @@ export async function POST(req: Request) {
     }
   }
 
-  const generatedQueries = buildQueries(query, body.conversationalRefinementText);
+  const intent = buildSemanticQueries(query, body.conversationalRefinementText);
+  const generatedQueries = intent.generatedQueries;
   const parsedSignals = {
     features: [], keywords: [query], englishKeywords: [], coreClues: [], negativeTerms: [],
     searchQueries: generatedQueries, generatedQueries, conversationalRefinementText: body.conversationalRefinementText ?? ''
@@ -60,7 +48,11 @@ export async function POST(req: Request) {
     return NextResponse.json({ blocked: true, blockReason: thirdSafety.reason, candidates: [], refinementChips: [] });
   }
 
-  console.log('[V3 search] generated search queries:', generatedQueries);
+  console.log('[V3 search] extracted purchaseTarget:', intent.purchaseTarget);
+  console.log('[V3 search] extracted ipClues:', intent.ipClues);
+  console.log('[V3 search] extracted visualClues:', intent.visualClues);
+  console.log('[V3 search] ignored contextWords:', intent.contextWords);
+  console.log('[V3 search] final generatedQueries:', generatedQueries);
 
   try {
     const serp = await fetchSerpCandidates(generatedQueries);
