@@ -74,9 +74,16 @@ export default function HomePage() {
       <section className="grid gap-3">
         {candidates.map((item) => (
           <article key={item.id} className="rounded-xl border bg-white p-4">
+            {item.imageUrl && <img src={item.imageUrl} alt={item.title} className="mb-3 h-40 w-full rounded-lg object-cover" />}
             <h2 className="font-semibold">{item.title}</h2>
-            <p className="text-sm text-slate-600">{item.snippet}</p>
-            <p className="mt-1 text-xs text-slate-500">{item.price} · {item.source}</p>
+            <p className="mt-1 text-sm text-slate-600">{item.snippet}</p>
+            <p className="mt-2 text-sm font-medium text-slate-800">{item.price ?? '價格待確認'}</p>
+            <p className="mt-1 text-xs text-slate-500">{item.merchant ?? item.source}{item.domain ? ` · ${item.domain}` : ''}</p>
+            {item.link && (
+              <a href={item.link} target="_blank" rel="noreferrer" className="mt-3 inline-flex rounded-lg bg-slate-900 px-3 py-2 text-sm text-white">
+                查看商品
+              </a>
+            )}
           </article>
         ))}
       </section>

@@ -7,6 +7,10 @@ export type Candidate = {
   price?: string;
   imageUrl?: string;
   source: string;
+  link?: string;
+  domain?: string;
+  merchant?: string;
+  isProductPage?: boolean;
 };
 
 export type SearchRequest = {

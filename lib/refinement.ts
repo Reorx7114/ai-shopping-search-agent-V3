@@ -28,5 +28,8 @@ export function shortConciergeReply(refinementText?: string) {
   }
   if (refinementText.includes('小空間')) return '我幫你優先留下更適合小空間使用的選項。';
   if (refinementText.includes('安靜')) return '我先把偏安靜取向的選項往前排了。';
-  return '收到，我已依你剛剛的方向再縮小一輪。';
+  if (/哪裡買|購買|商城|商店|商品連結|可以買/.test(refinementText)) return '我幫你改往可購買頁面找，優先看商城、官方商店和商品頁。';
+  if (/商城的網址|官方販售頁|販售/.test(refinementText)) return '我再把文章和社群結果往後放，優先找商城或官方販售頁。';
+  if (/便宜|平價|價格低/.test(refinementText)) return '我幫你往價格較低、比較容易入手的商品結果縮小。';
+  return '收到，我幫你往更可下單的商品方向再縮小一輪。';
 }
